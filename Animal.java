@@ -1,61 +1,56 @@
-package tn.esprit.gestionzoo.entities;
+package gestionzoo.entities;
 
-public sealed class Animal permits Aquatic, Terrestrial {
-
-    private String family, name;
+public class Animal {
+    private String name;
     private int age;
-    private boolean isMammal;
 
-
-    public Animal() {
-    }
-
-    public Animal(String family, String name, int age, boolean isMammal) {
-        this.family = family;
+    public Animal(String name, int age) throws InvalidAgeException {
+        if (age < 0) {
+            throw new InvalidAgeException("Age cannot be negative.");
+        }
         this.name = name;
         this.age = age;
-        this.isMammal = isMammal;
-    }
-
-
-    public String getFamily() {
-        return family;
-    }
-
-    public void setFamily(String family) {
-        this.family = family;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getAge() {
         return age;
     }
+}
 
-    public void setAge(int age) {
-        if (age < 0)
-            System.out.println("The age must a positive number");
-        else
-            this.age = age;
+public class Zoo {
+    private int numberOfCages;
+    private int numberOfAnimals;
+
+    public Zoo(int numberOfCages) {
+        this.numberOfCages = numberOfCages;
+        this.numberOfAnimals = 0;
     }
 
-    public boolean isMammal() {
-        return isMammal;
+    public void addAnimal(Animal animal) throws ZooFullException {
+        if (numberOfAnimals >= numberOfCages) {
+            throw new ZooFullException("The zoo is full, cannot add more animals.");
+        }
+        numberOfAnimals++;
+        System.out.println("Animal added. Number of animals: " + numberOfAnimals);
     }
 
-    public void setMammal(boolean mammal) {
-        isMammal = mammal;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Animal{ Family:" + family + ", Name: " + name + ", Age: " + age + ", isMammal: " + isMammal + "}";
+    public static void main(String[] args) {
+        Zoo zoo = new Zoo(3);
+        try {
+            Animal lion = new Animal("Lion", 5);
+            Animal elephant = new Animal("Elephant", -2); // This line will throw an InvalidAgeException
+            Animal giraffe = new Animal("Giraffe", 3);
+            zoo.addAnimal(lion);
+            zoo.addAnimal(elephant);
+            zoo.addAnimal(giraffe);
+        } catch (InvalidAgeException e) {
+            System.out.println(e.getMessage());
+        } catch (ZooFullException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
